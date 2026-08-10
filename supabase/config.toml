@@ -1,0 +1,4 @@
+# Minimal Supabase CLI project marker for OnboardBox.
+# Link a remote project with `supabase link` when credentials are available.
+
+project_id = "onboardbox"
