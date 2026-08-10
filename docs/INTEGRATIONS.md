@@ -225,7 +225,7 @@ Prefer platform collaborator/invite mechanisms.
 
 ## 11. File Storage
 
-Final provider is not selected yet.
+Provider for V1: **Supabase Storage** (`company-files` bucket).
 
 Requirements:
 
@@ -235,6 +235,8 @@ Requirements:
 - Supports common images, video, branding, and documents
 - Files should not be publicly guessable
 - Server authorization before download/view where appropriate
+
+Path convention: `{company_id}/{asset_id}/{filename}`.
 
 The client should experience one simple upload area regardless of storage provider.
 

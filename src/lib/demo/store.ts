@@ -234,6 +234,12 @@ export const demoDb = {
 
     templates.forEach((tpl) => {
       const stepId = randomUUID();
+      const metadata: Record<string, unknown> =
+        tpl.name === "connect_google"
+          ? { providers: ["google_ads"] }
+          : tpl.name === "connect_meta"
+            ? { providers: ["meta_ads"] }
+            : {};
       state.steps.push({
         id: stepId,
         onboarding_id: onboardingId,
@@ -251,7 +257,7 @@ export const demoDb = {
         instructional_video_url: tpl.instructional_video_url,
         external_url: tpl.external_url,
         website_platform: null,
-        metadata: {},
+        metadata,
         completed_at: null,
         completed_by_user_id: null,
         verified_at: null,
