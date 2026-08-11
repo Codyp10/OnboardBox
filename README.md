@@ -48,6 +48,8 @@ Apply the SQL migration in `supabase/migrations/20260810000000_init.sql` to your
 - `SUPABASE_SERVICE_ROLE_KEY` (server only)
 - `NEXT_PUBLIC_DEMO_MODE=false`
 
+Full checklist: `docs/SETUP_SUPABASE.md`.
+
 ## Integration stubs
 
 These stay behind service boundaries until real keys exist:
