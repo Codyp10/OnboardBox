@@ -60,3 +60,23 @@ If a requested implementation conflicts with the product documents, identify the
 When a product, data-model, integration, or architecture decision changes, update the appropriate file in `/docs`.
 
 Add significant settled decisions to `docs/DECISIONS.md`.
+
+## Cursor Cloud specific instructions
+
+Stack: Next.js 16 (App Router, Turbopack) + TypeScript + Tailwind v4 + Supabase. It is a single service. Standard commands live in `package.json`: `npm run dev`, `npm run lint`, `npm run build`.
+
+- The update script installs deps (`npm install`). It does not create `.env.local`; copy it once with `cp .env.example .env.local` if it is missing.
+- Demo mode: with no Supabase env vars set, the app auto-runs in demo mode (`NEXT_PUBLIC_DEMO_MODE=true`) backed by an in-memory store. No database is required to develop or exercise flows. Demo data is in-memory only and resets whenever the dev server restarts.
+- Log in from `/login` with the demo buttons: "Continue as JMCG admin" (admin flows) or "Continue as demo client" (client flows). Unauthenticated visits to `/` redirect to `/login`.
+- To run against real Supabase instead of demo mode, follow `docs/SETUP_SUPABASE.md` and set the Supabase env vars plus `NEXT_PUBLIC_DEMO_MODE=false`.
+- `next dev` automatically re-adds the `<!-- BEGIN:nextjs-agent-rules -->` block below to this file on every run. It is expected; commit it so the working tree stays clean.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
