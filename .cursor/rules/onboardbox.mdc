@@ -1,0 +1,16 @@
+---
+description: OnboardBox product guardrails
+alwaysApply: true
+---
+
+# OnboardBox
+
+- Read `/docs` before substantial product or architecture changes.
+- JMCG + clients only — not multi-agency SaaS.
+- Orchestrate existing tools; do not replace DocuSign, Stripe, or ad platforms.
+- Never store provider passwords or raw card data.
+- Enforce company-scoped tenant isolation server-side.
+- Same client nav: Home, Onboarding, Reporting, Approvals, Files, Billing, Account.
+- Out of scope: CRM, chat, AI summaries, lead records, native apps.
+- Stub Google/Meta OAuth, email, and reporting behind service boundaries until real keys exist.
+- DocuSign + Stripe orchestration come last in the V1 build order.

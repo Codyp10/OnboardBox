@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --ob-teal-900: #0b3a44;
+  --ob-teal-700: #146576;
+  --ob-teal-100: #d7eef2;
+  --ob-stone-50: #f7f5f2;
+  --ob-stone-100: #efece7;
+  --ob-stone-300: #d2cdc4;
+  --ob-ink: #1c1916;
+  --ob-ink-muted: #5c564e;
+  --ob-success: #2f6f4e;
+  --ob-warning: #a15c12;
+  --ob-danger: #9b2c2c;
+  --ob-radius: 10px;
+  --ob-radius-lg: 14px;
+  --background: var(--ob-stone-50);
+  --foreground: var(--ob-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ob-teal-900: var(--ob-teal-900);
+  --color-ob-teal-700: var(--ob-teal-700);
+  --color-ob-teal-100: var(--ob-teal-100);
+  --color-ob-stone-50: var(--ob-stone-50);
+  --color-ob-stone-100: var(--ob-stone-100);
+  --color-ob-stone-300: var(--ob-stone-300);
+  --color-ob-ink: var(--ob-ink);
+  --color-ob-ink-muted: var(--ob-ink-muted);
+  --color-ob-success: var(--ob-success);
+  --color-ob-warning: var(--ob-warning);
+  --color-ob-danger: var(--ob-danger);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-fraunces);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(20, 101, 118, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(11, 58, 68, 0.08), transparent 50%),
+    var(--ob-stone-50);
+  color: var(--ob-ink);
+  font-family: var(--font-manrope), sans-serif;
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-fraunces), serif;
+}
+
+@keyframes ob-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ob-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.ob-fade-up {
+  animation: ob-fade-up 420ms ease-out both;
+}
+
+.ob-fade-up-delay {
+  animation: ob-fade-up 520ms ease-out 80ms both;
+}
+
+.ob-progress-fill {
+  transform-origin: left center;
+  animation: ob-progress 700ms ease-out both;
+}
