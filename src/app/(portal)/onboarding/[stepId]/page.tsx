@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 import { demoDb } from "@/lib/demo/store";
+import { getCompanyForUserId } from "@/lib/data/companies";
+import { NoCompanyState } from "@/components/portal/no-company-state";
 import {
   completeInstructionStepAction,
   markWebsiteAccessAddedAction,
@@ -27,8 +29,12 @@ export default async function OnboardingStepPage({
   const { stepId } = await params;
   const session = await getSessionUser();
   if (!session) redirect("/login");
-  const company = demoDb.getCompanyForUser(session.profile.id);
-  if (!company) redirect("/login");
+  const company = await getCompanyForUserId(session.profile.id);
+  if (!company) {
+    return (
+      <NoCompanyState isAdmin={session.profile.user_type === "admin"} />
+    );
+  }
   const data = demoDb.getOnboarding(company.id);
   const step = data?.steps.find((s) => s.id === stepId);
   if (!step) notFound();

@@ -50,17 +50,14 @@ export async function resetDemoAction() {
 }
 
 export async function createCompanyAction(formData: FormData) {
-  await requireAdmin();
-  if (!isDemoMode()) {
-    throw new Error("Supabase company create not wired in this environment");
-  }
+  const session = await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
   if (!name) throw new Error("Company name is required");
 
   const serviceIds = formData.getAll("serviceIds").map(String);
   const locationName = String(formData.get("location_name") ?? "Primary Location");
-  const company = demoDb.createCompany({
+  const payload = {
     name,
     legal_name: String(formData.get("legal_name") ?? "") || undefined,
     website: String(formData.get("website") ?? "") || undefined,
@@ -77,8 +74,16 @@ export async function createCompanyAction(formData: FormData) {
       },
     ],
     approvals_enabled: formData.get("approvals_enabled") === "on",
-  });
+  };
 
+  if (isDemoMode()) {
+    const company = demoDb.createCompany(payload);
+    revalidatePath("/admin/companies");
+    redirect(`/admin/companies/${company.id}`);
+  }
+
+  const { createCompanyInSupabase } = await import("@/lib/data/create-company");
+  const company = await createCompanyInSupabase(payload, session.profile.id);
   revalidatePath("/admin/companies");
   redirect(`/admin/companies/${company.id}`);
 }

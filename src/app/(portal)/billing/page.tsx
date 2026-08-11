@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 import { demoDb } from "@/lib/demo/store";
+import { getCompanyForUserId } from "@/lib/data/companies";
+import { NoCompanyState } from "@/components/portal/no-company-state";
 import { startDocuSignAction, startStripeAction } from "@/lib/actions";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/card";
@@ -10,8 +12,12 @@ import { StatusBadge } from "@/components/ui/status-badge";
 export default async function BillingPage() {
   const session = await getSessionUser();
   if (!session) redirect("/login");
-  const company = demoDb.getCompanyForUser(session.profile.id);
-  if (!company) redirect("/login");
+  const company = await getCompanyForUserId(session.profile.id);
+  if (!company) {
+    return (
+      <NoCompanyState isAdmin={session.profile.user_type === "admin"} />
+    );
+  }
   const billing = demoDb.listBilling(company.id);
   const agreements = demoDb.listAgreements(company.id);
 
