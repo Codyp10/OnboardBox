@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 import { PortalNav } from "@/components/layout/portal-nav";
-import { demoLogoutAction } from "@/lib/actions";
+import { signOutAction } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 
 export default async function PortalLayout({
@@ -21,7 +21,7 @@ export default async function PortalLayout({
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {children}
-        <form action={demoLogoutAction} className="mt-12">
+        <form action={signOutAction} className="mt-12">
           <Button type="submit" variant="ghost">
             Sign out
           </Button>
