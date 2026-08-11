@@ -29,7 +29,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
   if (!profile) return null;
 
   const { data: memberships } = await supabase

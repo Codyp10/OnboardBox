@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth/session";
 import { demoDb } from "@/lib/demo/store";
+import { getCompanyForUserId } from "@/lib/data/companies";
+import { NoCompanyState } from "@/components/portal/no-company-state";
 import { calculateOnboardingProgress } from "@/lib/onboarding/progress";
 import { getCompanyReporting } from "@/lib/services/reporting";
 import { PageHeader } from "@/components/layout/page-header";
@@ -13,8 +15,9 @@ import { Button } from "@/components/ui/button";
 export default async function HomePage() {
   const session = await getSessionUser();
   if (!session) redirect("/login");
-  const company = demoDb.getCompanyForUser(session.profile.id);
-  if (!company) redirect("/login");
+  if (session.profile.user_type === "admin") redirect("/admin/companies");
+  const company = await getCompanyForUserId(session.profile.id);
+  if (!company) return <NoCompanyState />;
 
   const onboardingData = demoDb.getOnboarding(company.id);
   const progress = onboardingData

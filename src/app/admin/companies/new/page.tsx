@@ -1,11 +1,11 @@
 import { createCompanyAction } from "@/lib/actions";
-import { demoDb } from "@/lib/demo/store";
+import { listServices } from "@/lib/data/companies";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default async function NewCompanyPage() {
-  const services = demoDb.getServices();
+  const services = await listServices();
 
   return (
     <div>

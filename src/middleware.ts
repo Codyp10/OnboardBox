@@ -1,26 +1,85 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 import { isDemoMode } from "@/lib/demo/mode";
 
-const PUBLIC_PATHS = ["/", "/login", "/invite", "/auth/callback", "/api/oauth", "/api/webhooks"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth/callback", "/invite"];
+
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some(
+    (p) => pathname === p || (p !== "/" && pathname.startsWith(`${p}/`)),
+  );
+}
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isPublic = PUBLIC_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  const pathname = request.nextUrl.pathname;
 
   if (isDemoMode()) {
-    const demoUser = request.cookies.get("ob_demo_user")?.value;
-    if (!isPublic && !demoUser && !pathname.startsWith("/api/")) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
+    if (pathname === "/login" || pathname === "/signup") {
+      return NextResponse.redirect(new URL("/home", request.url));
     }
-    return NextResponse.next();
+    return response;
   }
 
-  return updateSession(request);
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    return response;
+  }
+
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value),
+        );
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
+      },
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user && !isPublicPath(pathname)) {
+    const login = new URL("/login", request.url);
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
+  }
+
+  if (user && (pathname === "/login" || pathname === "/signup")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("id", user.id)
+      .maybeSingle();
+    const dest =
+      profile?.user_type === "admin" ? "/admin/companies" : "/home";
+    return NextResponse.redirect(new URL(dest, request.url));
+  }
+
+  if (user && pathname.startsWith("/admin")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.user_type !== "admin") {
+      return NextResponse.redirect(new URL("/home", request.url));
+    }
+  }
+
+  return response;
 }
 
 export const config = {
